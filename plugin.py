@@ -27,12 +27,8 @@
 """
 
 import Domoticz
-import json
 import time
 import base64, hashlib
-from mqtt import MqttClient
-
-from value_types import CONNECTION_STATE, DISCONNECTION_STATE, FanMode, StandbyMonitoring, ConnectionError, DisconnectionError, SensorsData, StateData
 
 class TestPlug:
     #define class variables
