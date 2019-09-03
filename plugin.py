@@ -14,7 +14,7 @@
 		<param field="Username" label="Username" default="bla" required="true"/>
 		<param field="Password" label="Password" required="true" password="true"/>
         <param field="Mode3" label="Mode3: other password" width="300px" required="false" default=""/>
-		<param field="Mode5" label="Mode5" default="3" required="true"/>
+		<param field="Mode5" label="email adress" default="janjaap.kostelijk@gmail.com" required="true"/>
 		<param field="Mode4" label="Debug" width="75px">
             <options>
                 <option label="Verbose" value="Verbose"/>
@@ -29,6 +29,7 @@
 import Domoticz
 import time
 import base64, hashlib
+from dyson import DysonAccount
 
 class TestPlug:
     #define class variables
@@ -52,6 +53,13 @@ class TestPlug:
         Domoticz.Debug("Password 2 field: hashed " + self.password)
         Parameters['Password'] = self.password
         Domoticz.Debug("Password field: hashed????? " + Parameters['Password'])
+        
+        #create a Dyson account
+        Domoticz.Debug("=== start making connection to Dyson account ===")
+        dysonAccount = DysonAccount(Parameters['Mode5'],Parameters['Mode3'],"NL")
+        dysonAccount.login()
+        deviceList = dysonAccount.devices()
+        Domoticz.Debug("number of devices: '"+str(len(deviceList))+"'")
         
     def onStop(self):
         Domoticz.Debug("onStop called")
