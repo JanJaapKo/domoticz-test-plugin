@@ -3,10 +3,11 @@
 # Author: Jan-Jaap Kostelijk
 #
 """
-<plugin key="tetsPlugIn" name="test plugin" author="Jan-Jaap Kostelijk" version="1.0.0" >
+<plugin key="testPlugIn" name="test plugin" author="Jan-Jaap Kostelijk" version="1.1.0" >
     <description>
         <h2>/Test plugin</h2><br/>
-        just a plugin to run some simple tests
+        just a plugin to run some simple tests<br>
+        now setup for Dyson account test
     </description>
     <params>
 		<param field="Address" label="IP Address" width="200px" required="true" default="192.168.86.23"/>
