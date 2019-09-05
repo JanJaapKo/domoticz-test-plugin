@@ -4,7 +4,6 @@ import Domoticz
 import requests
 import urllib.request
 import urllib.parse
-from base64 import b64encode
 #from urllib.request import HTTPBasicAuth
 
 DYSON_API_URL = "api.cp.dyson.com"
@@ -39,9 +38,6 @@ class DysonAccount:
             Domoticz.Debug("Login OK, JSON response: '"+str(json_response)+"'")
             pwdMngr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
             pwdMngr.add_password(None, uri, json_response["Account"], json_response["Password"])
-#            self._auth = urllib.request.HTTPBasicAuth(json_response["Account"],
-#                                       json_response["Password"])
-            #self._auth = urllib.request.HTTPBasicAuthHandler(pwdMngr)
             self._auth = (json_response["Account"], json_response["Password"])
             self._logged = True
         else:
