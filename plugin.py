@@ -59,7 +59,10 @@ class TestPlug:
         dysonAccount = DysonAccount(Parameters['Mode5'],Parameters['Mode3'],"NL")
         dysonAccount.login()
         deviceList = dysonAccount.devices()
-        Domoticz.Debug("number of devices: '"+str(len(deviceList))+"'")
+        if len(deviceList)>0:
+            Domoticz.Debug("number of devices: '"+str(len(deviceList))+"'")
+        else:
+            Domoticz.Debug("no devices found")
         
     def onStop(self):
         Domoticz.Debug("onStop called")
