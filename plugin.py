@@ -3,18 +3,18 @@
 # Author: Jan-Jaap Kostelijk
 #
 """
-<plugin key="testPlugIn" name="test plugin" author="Jan-Jaap Kostelijk" version="1.1.0" >
+<plugin key="tetsPlugIn" name="test plugin" author="Jan-Jaap Kostelijk" version="1.1.0" >
     <description>
-        <h2>/Test plugin</h2><br/>
-        just a plugin to run some simple tests<br>
-        now setup for Dyson account test
+        Test plugin<br/><br/>
+        just a plugin to run some simple tests<br/>
+        now setup to test Dyson cloud account connection
     </description>
     <params>
 		<param field="Address" label="IP Address" width="200px" required="true" default="192.168.86.23"/>
 		<param field="Port" label="Port" width="30px" required="true" default="1883"/>
 		<param field="Username" label="Username" default="bla" required="true"/>
 		<param field="Password" label="Password" required="true" password="true"/>
-        <param field="Mode3" label="Mode3: other password" width="300px" required="false" default=""/>
+        <param field="Mode3" label="Dyson password" width="300px" required="false" default=""/>
 		<param field="Mode5" label="email adress" default="sinterklaas@gmail.com" required="true"/>
 		<param field="Mode4" label="Debug" width="75px">
             <options>
@@ -50,10 +50,10 @@ class TestPlug:
         #read out parameters
         Domoticz.Debug("Password field: " + Parameters['Password'])
         Domoticz.Debug("Password 2 field: " + Parameters['Mode3'])
-        self.password = self._hashed_password(Parameters['Password'])
-        Domoticz.Debug("Password 2 field: hashed " + self.password)
-        Parameters['Password'] = self.password
-        Domoticz.Debug("Password field: hashed????? " + Parameters['Password'])
+        #self.password = self._hashed_password(Parameters['Password'])
+        #Domoticz.Debug("Password 2 field: hashed " + self.password)
+        #Parameters['Password'] = self.password
+        #Domoticz.Debug("Password field: hashed????? " + Parameters['Password'])
         
         #create a Dyson account
         Domoticz.Debug("=== start making connection to Dyson account ===")

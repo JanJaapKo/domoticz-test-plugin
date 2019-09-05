@@ -4,6 +4,7 @@ import Domoticz
 import requests
 import urllib.request
 import urllib.parse
+from base64 import b64encode
 #from urllib.request import HTTPBasicAuth
 
 DYSON_API_URL = "api.cp.dyson.com"
@@ -30,13 +31,18 @@ class DysonAccount:
             "Email": self._email,
             "Password": self._password
         }
+        uri = "https://{0}/v1/userregistration/authenticate?country={1}".format(DYSON_API_URL, self._country)
         login = requests.post(
-            "https://{0}/v1/userregistration/authenticate?country={1}".format(
-                DYSON_API_URL, self._country), request_body, verify=False)
+            uri, request_body, verify=False)
         if login.status_code == requests.codes.ok:
             json_response = login.json()
-            self._auth = HTTPBasicAuth(json_response["Account"],
-                                       json_response["Password"])
+            Domoticz.Debug("Login OK, JSON response: '"+str(json_response)+"'")
+            pwdMngr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
+            pwdMngr.add_password(None, uri, json_response["Account"], json_response["Password"])
+#            self._auth = urllib.request.HTTPBasicAuth(json_response["Account"],
+#                                       json_response["Password"])
+            #self._auth = urllib.request.HTTPBasicAuthHandler(pwdMngr)
+            self._auth = (json_response["Account"], json_response["Password"])
             self._logged = True
         else:
             self._logged = False
@@ -50,7 +56,7 @@ class DysonAccount:
                     DYSON_API_URL), verify=False, auth=self._auth)
             devices = []
             for device in device_response.json():
-                Domoticz.Debug("Device returned from Dyson: "+device+"'")
+                Domoticz.Debug("Device returned from Dyson: "+str(device)+"'")
             return devices
         else:
             Domoticz.Log("Not logged to Dyson Web Services.")
