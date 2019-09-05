@@ -14,7 +14,7 @@
 		<param field="Username" label="Username" default="bla" required="true"/>
 		<param field="Password" label="Password" required="true" password="true"/>
         <param field="Mode3" label="Mode3: other password" width="300px" required="false" default=""/>
-		<param field="Mode5" label="email adress" default="janjaap.kostelijk@gmail.com" required="true"/>
+		<param field="Mode5" label="email adress" default="sinterklaas@gmail.com" required="true"/>
 		<param field="Mode4" label="Debug" width="75px">
             <options>
                 <option label="Verbose" value="Verbose"/>
