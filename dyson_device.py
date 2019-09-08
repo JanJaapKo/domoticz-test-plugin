@@ -1,14 +1,12 @@
 """Base Dyson devices."""
 
-
 import json
 import time
 
-from .utils import printable_fields
-from .utils import decrypt_password
+from utils import printable_fields
+from utils import decrypt_password
 
 DEFAULT_PORT = 1883
-
 
 class NetworkDevice:
     """Network device."""

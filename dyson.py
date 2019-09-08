@@ -4,8 +4,7 @@ import Domoticz
 import requests
 import urllib.request
 import urllib.parse
-from .utils import is_360_eye_device, is_heating_device
-from .dyson_device import DysonDevice
+from dyson_device import DysonDevice
 
 DYSON_API_URL = "api.cp.dyson.com"
 

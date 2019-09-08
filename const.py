@@ -1,7 +1,6 @@
 """Dyson Pure Cool Link constants."""
 
 from enum import Enum
-from .exceptions import DysonInvalidTargetTemperatureException as DITTE
 
 DYSON_PURE_COOL_LINK_TOUR = "475"
 DYSON_PURE_COOL_LINK_DESK = "469"
@@ -95,31 +94,6 @@ class HeatState(Enum):
 
     HEAT_STATE_OFF = "OFF"
     HEAT_STATE_ON = "HEAT"
-
-
-class HeatTarget:
-    """Heat Target for fan. Note dyson uses kelvin as the temperature unit."""
-
-    @staticmethod
-    def celsius(temperature):
-        """Convert the given int celsius temperature to string in Kelvin.
-
-        :param temperature temperature in celsius between 1 to 37 inclusive.
-        """
-        if temperature < 1 or temperature > 37:
-            raise DITTE(DITTE.CELSIUS, temperature)
-        return str((int(temperature) + 273) * 10)
-
-    @staticmethod
-    def fahrenheit(temperature):
-        """Convert the given int fahrenheit temperature to string in Kelvin.
-
-        :param temperature temperature in fahrenheit between 34 to 98
-                            inclusive.
-        """
-        if temperature < 34 or temperature > 98:
-            raise DITTE(DITTE.FAHRENHEIT, temperature)
-        return str(int((int(temperature) + 459.67) * 5/9) * 10)
 
 
 class ResetFilter(Enum):
