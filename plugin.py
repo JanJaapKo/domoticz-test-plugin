@@ -12,8 +12,17 @@
     <params>
 		<param field="Address" label="IP Address" width="200px" required="true" default="192.168.86.23"/>
 		<param field="Port" label="Port" width="30px" required="true" default="1883"/>
-		<param field="Username" label="Username" default="bla" required="true"/>
-		<param field="Password" label="Password" required="true" password="true"/>
+		<param field="Mode1" label="Dyson type (Pure Cool only at this moment)">
+            <options>
+                <option label="455" value="455"/>
+                <option label="465" value="465"/>
+                <option label="469" value="469"/>
+                <option label="475" value="475" default="true"/>
+                <option label="527" value="527"/>
+            </options>
+        </param>
+		<param field="Username" label="Dyson Serial No." required="true"/>
+		<param field="Password" label="Dyson Password (see machine)" required="true" password="true"/>
         <param field="Mode3" label="Mode3: other password" width="300px" required="false" default=""/>
 		<param field="Mode5" label="email adress" default="janjaap.kostelijk@gmail.com" required="true"/>
 		<param field="Mode4" label="Debug" width="75px">
@@ -28,8 +37,10 @@
 """
 
 import Domoticz
+import json
 import time
 import base64, hashlib
+from mqtt import MqttClient
 from dyson import DysonAccount
 
 class TestPlug:
@@ -48,19 +59,27 @@ class TestPlug:
             DumpConfigToLog()
 
         #read out parameters
-        Domoticz.Debug("Password field: " + Parameters['Password'])
-        Domoticz.Debug("Password 2 field: " + Parameters['Mode3'])
+        self.ip_address = Parameters["Address"].strip()
+        self.port_number = Parameters["Port"].strip()
+        self.serial_number = Parameters['Username']
+        self.device_type = Parameters['Mode1']
         self.password = self._hashed_password(Parameters['Password'])
-        Domoticz.Debug("Password 2 field: hashed " + self.password)
-        Parameters['Password'] = self.password
-        Domoticz.Debug("Password field: hashed????? " + Parameters['Password'])
+        Parameters['Password'] = self.password #override the default password with the hased variant
+        self.base_topic = "{0}/{1}".format(self.device_type, self.serial_number)
+        mqtt_client_id = Parameters["Mode3"].strip()
+
+        #create the connection
+        self.mqttClient = MqttClient(self.ip_address, self.port_number, mqtt_client_id, self.onMQTTConnected, self.onMQTTDisconnected, self.onMQTTPublish, self.onMQTTSubscribed)
         
         #create a Dyson account
         Domoticz.Debug("=== start making connection to Dyson account ===")
         dysonAccount = DysonAccount(Parameters['Mode5'],Parameters['Mode3'],"NL")
         dysonAccount.login()
         deviceList = dysonAccount.devices()
-        Domoticz.Debug("number of devices: '"+str(len(deviceList))+"'")
+        if len(deviceList)>0:
+            Domoticz.Debug("number of devices: '"+str(len(deviceList))+"'")
+        else:
+            Domoticz.Debug("no devices found")
         
     def onStop(self):
         Domoticz.Debug("onStop called")
@@ -70,12 +89,13 @@ class TestPlug:
 
     def onConnect(self, Connection, Status, Description):
         Domoticz.Debug("onConnect called")
+        self.mqttClient.onConnect(Connection, Status, Description)
 
     def onDisconnect(self, Connection):
-        Domoticz.Debug("onDisconnect called")
+        self.mqttClient.onDisconnect(Connection)
 
     def onMessage(self, Connection, Data):
-        Domoticz.Debug("onMessage called")
+        self.mqttClient.onMessage(Connection, Data)
 
     def onNotification(self, Name, Subject, Text, Status, Priority, Sound, ImageFile):
         Domoticz.Log("DysonPureLink plugin: onNotification: " + Name + "," + Subject + "," + Text + "," + Status + "," + str(Priority) + "," + Sound + "," + ImageFile)
@@ -86,8 +106,46 @@ class TestPlug:
     def onDeviceRemoved(self):
         Domoticz.Log("DysonPureLink plugin: onDeviceRemoved called")
 
+    def onMQTTConnected(self):
+        """connection to device established"""
+        self.mqttClient.Subscribe([self.base_topic + '/#']) #subscribe to topics on the machine
+        topic, payload = self.dyson_pure_link.request_state()
+        self.mqttClient.Publish(topic, payload) #ask for update of current status
+
+    def onMQTTDisconnected(self):
+        Domoticz.Debug("onMQTTDisconnected")
+
+    def onMQTTSubscribed(self):
+        Domoticz.Debug("onMQTTSubscribed")
+        
+    def onMQTTPublish(self, topic, message):
+        Domoticz.Debug("MQTT Publish: MQTT message incoming: " + topic + " " + str(message))
+
+        if (topic == self.base_topic + '/status/current'):
+            #update of the machine's status
+            if StateData.is_state_data(message):
+                Domoticz.Debug("machine state or state change recieved")
+                self.state_data = StateData(message)
+                self.updateDevices()
+            if SensorsData.is_sensors_data(message):
+                Domoticz.Debug("sensor state recieved")
+                self.sensor_data = SensorsData(message)
+                self.updateSensors()
+
+        if (topic == self.base_topic + '/status/connection'):
+            #connection status received
+            Domoticz.Debug("connection state recieved")
+
+        if (topic == self.base_topic + '/status/software'):
+            #connection status received
+            Domoticz.Debug("software state recieved")
+            
+        if (topic == self.base_topic + '/status/summary'):
+            #connection status received
+            Domoticz.Debug("summary state recieved")
+
     def _hashed_password(self, pwd):
-        """Hash password (found in manual) to a base64 encoded of its shad512 value"""
+        """Hash password (found in manual) to a base64 encoded of its sha512 value"""
         hash = hashlib.sha512()
         hash.update(pwd.encode('utf-8'))
         return base64.b64encode(hash.digest()).decode('utf-8')
@@ -134,9 +192,10 @@ def onDeviceRemoved():
 
     # Generic helper functions
 def DumpConfigToLog():
+    Domoticz.Debug("Parameter count: " + str(len(Parameters)))
     for x in Parameters:
         if Parameters[x] != "":
-            Domoticz.Debug( "'" + x + "':'" + str(Parameters[x]) + "'")
+            Domoticz.Debug( "Parameter '" + x + "':'" + str(Parameters[x]) + "'")
     Domoticz.Debug("Device count: " + str(len(Devices)))
     for x in Devices:
         Domoticz.Debug("Device:           " + str(x) + " - " + str(Devices[x]))

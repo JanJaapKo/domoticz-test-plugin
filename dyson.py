@@ -2,7 +2,7 @@
 
 import Domoticz
 import requests
-from requests.auth import HTTPBasicAuth
+from urllib.request import HTTPBasicAuth
 
 DYSON_API_URL = "api.cp.dyson.com"
 
