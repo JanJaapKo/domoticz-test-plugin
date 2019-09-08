@@ -66,7 +66,8 @@ class TestPlug:
         self.password = self._hashed_password(Parameters['Password'])
         Parameters['Password'] = self.password #override the default password with the hased variant
         self.base_topic = "{0}/{1}".format(self.device_type, self.serial_number)
-        mqtt_client_id = Parameters["Mode3"].strip()
+        mqtt_client_id = ""
+        #mqtt_client_id = Parameters["Mode3"].strip()
 
         #create the connection
         self.mqttClient = MqttClient(self.ip_address, self.port_number, mqtt_client_id, self.onMQTTConnected, self.onMQTTDisconnected, self.onMQTTPublish, self.onMQTTSubscribed)
