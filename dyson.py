@@ -4,6 +4,8 @@ import Domoticz
 import requests
 import urllib.request
 import urllib.parse
+from .utils import is_360_eye_device, is_heating_device
+from .dyson_device import DysonDevice
 
 DYSON_API_URL = "api.cp.dyson.com"
 
@@ -52,6 +54,7 @@ class DysonAccount:
             devices = []
             for device in device_response.json():
                 Domoticz.Debug("Device returned from Dyson: "+str(device)+"'")
+                dyson_device = DysonDevice(device)
             return devices
         else:
             Domoticz.Log("Not logged to Dyson Web Services.")

@@ -3,7 +3,7 @@
 # Author: Jan-Jaap Kostelijk
 #
 """
-<plugin key="tetsPlugIn" name="test plugin" author="Jan-Jaap Kostelijk" version="1.1.0" >
+<plugin key="tetsPlugIn" name="test plugin" author="Jan-Jaap Kostelijk" version="1.2.0" >
     <description>
         Test plugin<br/><br/>
         just a plugin to run some simple tests<br/>
