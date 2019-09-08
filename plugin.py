@@ -3,11 +3,11 @@
 # Author: Jan-Jaap Kostelijk
 #
 """
-<plugin key="testPlugIn" name="test plugin" author="Jan-Jaap Kostelijk" version="1.1.0" >
+<plugin key="tetsPlugIn" name="test plugin" author="Jan-Jaap Kostelijk" version="1.1.0" >
     <description>
-        <h2>/Test plugin</h2><br/>
-        just a plugin to run some simple tests<br>
-        now setup for Dyson account test
+        Test plugin<br/><br/>
+        just a plugin to run some simple tests<br/>
+        now setup to test Dyson cloud account connection
     </description>
     <params>
 		<param field="Address" label="IP Address" width="200px" required="true" default="192.168.86.23"/>
@@ -23,8 +23,8 @@
         </param>
 		<param field="Username" label="Dyson Serial No." required="true"/>
 		<param field="Password" label="Dyson Password (see machine)" required="true" password="true"/>
-        <param field="Mode3" label="Mode3: other password" width="300px" required="false" default=""/>
-		<param field="Mode5" label="email adress" default="janjaap.kostelijk@gmail.com" required="true"/>
+        <param field="Mode3" label="Dyson password" width="300px" required="false" default=""/>
+		<param field="Mode5" label="email adress" default="sinterklaas@gmail.com" required="true"/>
 		<param field="Mode4" label="Debug" width="75px">
             <options>
                 <option label="Verbose" value="Verbose"/>
