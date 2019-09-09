@@ -53,18 +53,17 @@ class DysonDevice:
         :param json_body: JSON message returned by the HTTPS API
         """
         self._active = json_body['Active']
-        self._serial = json_body['Serial']
-        self._name = json_body['Name']
-        self._version = json_body['Version']
-        self._credentials = decrypt_password(json_body['LocalCredentials'])
-        self._auto_update = json_body['AutoUpdate']
-        self._new_version_available = json_body['NewVersionAvailable']
-        self._product_type = json_body['ProductType']
+        self._serial = json_body['Serial'] #device serial number
+        self._name = json_body['Name'] #device name
+        self._version = json_body['Version'] #sw version on device
+        self._credentials = decrypt_password(json_body['LocalCredentials']) #registered password
+        self._auto_update = json_body['AutoUpdate'] #
+        self._new_version_available = json_body['NewVersionAvailable'] #is there a new version available?
+        self._product_type = json_body['ProductType'] #technical product type
         self._network_device = None
         self._connected = False
         self._device_available = False
         self._current_state = None
-
 
     @property
     def active(self):

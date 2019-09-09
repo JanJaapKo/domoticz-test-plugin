@@ -54,6 +54,7 @@ class DysonAccount:
             for device in device_response.json():
                 Domoticz.Debug("Device returned from Dyson: "+str(device)+"'")
                 dyson_device = DysonDevice(device)
+                devices.append(dyson_device)
             return devices
         else:
             Domoticz.Log("Not logged to Dyson Web Services.")

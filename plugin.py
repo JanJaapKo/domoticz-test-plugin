@@ -61,16 +61,9 @@ class TestPlug:
         #read out parameters
         self.ip_address = Parameters["Address"].strip()
         self.port_number = Parameters["Port"].strip()
-        self.serial_number = Parameters['Username']
-        self.device_type = Parameters['Mode1']
+        #self.serial_number = Parameters['Username']
+        #self.device_type = Parameters['Mode1']
         self.password = self._hashed_password(Parameters['Password'])
-        Parameters['Password'] = self.password #override the default password with the hased variant
-        self.base_topic = "{0}/{1}".format(self.device_type, self.serial_number)
-        mqtt_client_id = ""
-        #mqtt_client_id = Parameters["Mode3"].strip()
-
-        #create the connection
-        self.mqttClient = MqttClient(self.ip_address, self.port_number, mqtt_client_id, self.onMQTTConnected, self.onMQTTDisconnected, self.onMQTTPublish, self.onMQTTSubscribed)
         
         #create a Dyson account
         Domoticz.Debug("=== start making connection to Dyson account ===")
@@ -81,6 +74,22 @@ class TestPlug:
             Domoticz.Debug("number of devices: '"+str(len(deviceList))+"'")
         else:
             Domoticz.Debug("no devices found")
+
+        if len(deviceList)==1:
+            cloudDevice=deviceList[0]
+
+        #self.password = cloudDevice.credentials
+        Domoticz.Debug("local device pwd: '"+self.password+"'")
+        Domoticz.Debug("cloud device pwd: '"+cloudDevice.credentials+"'")
+
+
+        Parameters['Password'] = cloudDevice.credentials #self.password #override the default password with the hased variant
+        self.base_topic = "{0}/{1}".format(cloudDevice.product_type, cloudDevice.serial)
+        mqtt_client_id = ""
+        Domoticz.Debug("base topic defined: '"+self.base_topic+"'")
+
+        #create the connection
+        self.mqttClient = MqttClient(self.ip_address, self.port_number, mqtt_client_id, self.onMQTTConnected, self.onMQTTDisconnected, self.onMQTTPublish, self.onMQTTSubscribed)
         
     def onStop(self):
         Domoticz.Debug("onStop called")
