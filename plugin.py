@@ -118,6 +118,7 @@ class TestPlug:
 
     def onMQTTConnected(self):
         """connection to device established"""
+        Domoticz.Debug("onMQTTConnected called")
         self.mqttClient.Subscribe([self.base_topic + '/#']) #subscribe to topics on the machine
         topic, payload = self.dyson_pure_link.request_state()
         self.mqttClient.Publish(topic, payload) #ask for update of current status
