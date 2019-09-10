@@ -36,8 +36,8 @@ class DysonAccount:
         if login.status_code == requests.codes.ok:
             json_response = login.json()
             Domoticz.Debug("Login OK, JSON response: '"+str(json_response)+"'")
-            pwdMngr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
-            pwdMngr.add_password(None, uri, json_response["Account"], json_response["Password"])
+            #pwdMngr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
+            #pwdMngr.add_password(None, uri, json_response["Account"], json_response["Password"])
             self._auth = (json_response["Account"], json_response["Password"])
             self._logged = True
         else:
@@ -47,6 +47,7 @@ class DysonAccount:
     def devices(self):
         """Return all devices linked to the account."""
         if self._logged:
+            Domoticz.Debug("Fetching devices from Dyson Web Services.")
             device_response = requests.get(
                 "https://{0}/v1/provisioningservice/manifest".format(
                     DYSON_API_URL), verify=False, auth=self._auth)
