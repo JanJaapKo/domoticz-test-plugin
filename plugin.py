@@ -78,18 +78,19 @@ class TestPlug:
         if len(deviceList)==1:
             cloudDevice=deviceList[0]
 
-        #self.password = cloudDevice.credentials
-        Domoticz.Debug("local device pwd: '"+self.password+"'")
-        Domoticz.Debug("cloud device pwd: '"+cloudDevice.credentials+"'")
+            #self.password = cloudDevice.credentials
+            Domoticz.Debug("local device pwd:      '"+self.password+"'")
+            Domoticz.Debug("cloud device pwd:      '"+cloudDevice.credentials+"'")
+            #Domoticz.Debug("cloud device pwd UTF8: '"+cloudDevice.credentials.encode('utf-8')+"'")
 
 
-        Parameters['Password'] = cloudDevice.credentials #self.password #override the default password with the hased variant
-        self.base_topic = "{0}/{1}".format(cloudDevice.product_type, cloudDevice.serial)
-        mqtt_client_id = ""
-        Domoticz.Debug("base topic defined: '"+self.base_topic+"'")
+            Parameters['Password'] = cloudDevice.credentials #self.password #override the default password with the hased variant
+            self.base_topic = "{0}/{1}".format(cloudDevice.product_type, cloudDevice.serial)
+            mqtt_client_id = ""
+            Domoticz.Debug("base topic defined: '"+self.base_topic+"'")
 
-        #create the connection
-        self.mqttClient = MqttClient(self.ip_address, self.port_number, mqtt_client_id, self.onMQTTConnected, self.onMQTTDisconnected, self.onMQTTPublish, self.onMQTTSubscribed)
+            #create the connection
+            self.mqttClient = MqttClient(self.ip_address, self.port_number, mqtt_client_id, self.onMQTTConnected, self.onMQTTDisconnected, self.onMQTTPublish, self.onMQTTSubscribed)
         
     def onStop(self):
         Domoticz.Debug("onStop called")
