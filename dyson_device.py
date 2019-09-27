@@ -124,3 +124,11 @@ class DysonDevice:
                   ("product_type", self.product_type),
                   ("network_device", str(self.network_device))]
         return fields
+        
+    def request_state(self):
+        """creates request for current state message"""
+        command = json.dumps({
+                'msg': 'REQUEST-CURRENT-STATE',
+                'time': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())})
+            
+        return(command);

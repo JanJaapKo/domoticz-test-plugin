@@ -45,6 +45,7 @@ from dyson import DysonAccount
 
 class TestPlug:
     #define class variables
+    cloudDevice = None
 
     def __init__(self):
         pass
@@ -76,21 +77,20 @@ class TestPlug:
             Domoticz.Debug("no devices found")
 
         if len(deviceList)==1:
-            cloudDevice=deviceList[0]
+            self.cloudDevice=deviceList[0]
 
-            #self.password = cloudDevice.credentials
             Domoticz.Debug("local device pwd:      '"+self.password+"'")
-            Domoticz.Debug("cloud device pwd:      '"+cloudDevice.credentials+"'")
-            #Domoticz.Debug("cloud device pwd UTF8: '"+cloudDevice.credentials.encode('utf-8')+"'")
-
-
-            Parameters['Password'] = cloudDevice.credentials #self.password #override the default password with the hased variant
-            self.base_topic = "{0}/{1}".format(cloudDevice.product_type, cloudDevice.serial)
+            Domoticz.Debug("cloud device pwd:      '"+self.cloudDevice.credentials+"'")
+            Parameters['Username'] = self.cloudDevice.serial #take username from account
+            
+            Parameters['Password'] = self.cloudDevice.credentials #self.password #override the default password with the hased variant
+            self.base_topic = "{0}/{1}".format(self.cloudDevice.product_type, self.cloudDevice.serial)
             mqtt_client_id = ""
             Domoticz.Debug("base topic defined: '"+self.base_topic+"'")
 
             #create the connection
             self.mqttClient = MqttClient(self.ip_address, self.port_number, mqtt_client_id, self.onMQTTConnected, self.onMQTTDisconnected, self.onMQTTPublish, self.onMQTTSubscribed)
+
         
     def onStop(self):
         Domoticz.Debug("onStop called")
@@ -121,7 +121,8 @@ class TestPlug:
         """connection to device established"""
         Domoticz.Debug("onMQTTConnected called")
         self.mqttClient.Subscribe([self.base_topic + '/#']) #subscribe to topics on the machine
-        topic, payload = self.dyson_pure_link.request_state()
+        payload = self.cloudDevice.request_state()
+        topic = '{0}/{1}/command'.format(self.cloudDevice.product_type, self.cloudDevice.serial)
         self.mqttClient.Publish(topic, payload) #ask for update of current status
 
     def onMQTTDisconnected(self):
@@ -135,14 +136,7 @@ class TestPlug:
 
         if (topic == self.base_topic + '/status/current'):
             #update of the machine's status
-            if StateData.is_state_data(message):
-                Domoticz.Debug("machine state or state change recieved")
-                self.state_data = StateData(message)
-                self.updateDevices()
-            if SensorsData.is_sensors_data(message):
-                Domoticz.Debug("sensor state recieved")
-                self.sensor_data = SensorsData(message)
-                self.updateSensors()
+            Domoticz.Debug("machine state recieved")
 
         if (topic == self.base_topic + '/status/connection'):
             #connection status received

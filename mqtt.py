@@ -85,7 +85,7 @@ class MqttClient:
 
     def onConnect(self, Connection, Status, Description):
         if (Status == 0):
-            Domoticz.Debug("MQTT connected successfully.")
+            Domoticz.Debug("MqttClient::MQTT connected successfully.")
             self.Connect()
         else:
             Domoticz.Log("Failed to connect to: " + Connection.Address + ":" + Connection.Port + ", Description: " + Description)
