@@ -1,5 +1,6 @@
 # Based on https://github.com/emontnemery/domoticz_mqtt_discovery
-import Domoticz
+import DomoticzEx as Domoticz
+#import Domoticz
 import time
 import json
 
@@ -41,9 +42,9 @@ class MqttClient:
 
         Domoticz.Debug("MqttClient::Open: setup onnection object")
         self.mqttConn = Domoticz.Connection(Name=self.address, Transport="TCP/IP", Protocol=protocol, Address=self.address, Port=self.port)
-        #self.mqttConn = Domoticz.Connection(Name=self.address, Transport="TCP/IP", Address=self.address, Port=self.port)
         Domoticz.Debug("MqttClient::Open: open connection")
         self.mqttConn.Connect()
+        self.isConnected = True
 
     def Connect(self):
         Domoticz.Debug("MqttClient::Connect")
