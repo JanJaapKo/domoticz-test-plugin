@@ -146,7 +146,7 @@ class TestPlug:
             
         Devices[DeviceID].Units[Unit].nValue = nValue
         Devices[DeviceID].Units[Unit].sValue = str(sValue)
-        #Devices[DeviceID].Units[Unit].sValue = str(sValue)
+        Devices[DeviceID].Units[Unit].LastLevel = int(sValue)
         Devices[DeviceID].Units[Unit].Update(Log=True)
 
         Domoticz.Debug("Update %s - %s: nValue %s - sValue %s - BatteryLevel %s" % (
