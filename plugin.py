@@ -11,14 +11,14 @@
     <params>
 		<param field="Address" label="IP Address" width="200px" required="true" default="127.0.0.1"/>
 		<param field="Port" label="Port" width="30px" required="true" default="1883"/>
-		<param field="Mode4" label="Debug" width="75px">
+		<param field="Mode5" label="Debug" width="75px">
             <options>
                 <option label="Verbose" value="Verbose"/>
                 <option label="True" value="Debug" default="true"/>
                 <option label="False" value="Normal"/>
             </options>
         </param>
-        <param field="Mode2" label="Refresh interval" width="75px">
+        <param field="Mode6" label="Refresh interval" width="75px">
             <options>
                 <option label="20s" value="2"/>
                 <option label="1m" value="6"/>
@@ -45,10 +45,10 @@ class TestPlug:
 
     def onStart(self):
         Domoticz.Log("onStart called")
-        if Parameters['Mode4'] == 'Debug':
+        if Parameters['Mode5'] == 'Debug':
             Domoticz.Debugging(2)
             DumpConfigToLog()
-        if Parameters['Mode4'] == 'Verbose':
+        if Parameters['Mode5'] == 'Verbose':
             Domoticz.Debugging(1)
             DumpConfigToLog()
 
@@ -58,17 +58,16 @@ class TestPlug:
         self.base_topic = "test"
         mqtt_client_id = ""
         Domoticz.Debug("base topic defined: '"+self.base_topic+"'")
-        self.runCounter = int(Parameters['Mode2'])
+        self.runCounter = int(Parameters['Mode6'])
 
         #create the connection
-        self.mqttClient = MqttClient(self.ip_address, self.port_number, mqtt_client_id, self.onMQTTConnected, self.onMQTTDisconnected, self.onMQTTPublish, self.onMQTTSubscribed)
-
-        if "shutter" not in Images:
-            Domoticz.Image("shutter.zip").Create()
+        #self.mqttClient = MqttClient(self.ip_address, self.port_number, mqtt_client_id, self.onMQTTConnected, self.onMQTTDisconnected, self.onMQTTPublish, self.onMQTTSubscribed)
 
         swtype = 15
         Domoticz.Device(DeviceID="deviceURL") #use deviceURL as identifier for Domoticz.Device instance
         Domoticz.Unit(Name="label orientation", Unit=2, Type=244, Subtype=73, Switchtype=swtype, DeviceID="deviceURL").Create()
+        Domoticz.Unit(Name="Unit 1", Unit=1, Type=244, Subtype=73, Switchtype=swtype, DeviceID="deviceURL").Create()
+        Domoticz.Unit(Name="Unit 3", Unit=3, Type=244, Subtype=73, Switchtype=swtype, DeviceID="deviceURL").Create()
         #Domoticz.Device(Name="label orientation", Unit=3, Type=244, Subtype=73, Switchtype=swtype, DeviceID="deviceURL", Image=Images["shutter"].ID).Create()
 
     def onStop(self):
@@ -95,7 +94,7 @@ class TestPlug:
         self.runCounter = self.runCounter - 1
         if self.runCounter <= 0:
             Domoticz.Debug("Poll unit")
-            self.runCounter = int(Parameters['Mode2'])
+            self.runCounter = int(Parameters['Mode6'])
             self.mqttClient.onHeartbeat()
 
     def onDeviceAdded(self, DeviceID, Unit):
@@ -227,6 +226,16 @@ def DumpConfigToLog():
         if Parameters[x] != "":
             Domoticz.Debug("Parameter: '" + x + "':'" + str(Parameters[x]) + "'")
     Domoticz.Debug("Device count: " + str(len(Devices)))
-    for x in Devices:
-        Domoticz.Debug("Device:           " + str(x) + " - " + str(Devices[x]))
+def DumpConfigToLog():
+    Domoticz.Debug("Parameters count: " + str(len(Parameters)))
+    for x in Parameters:
+        if Parameters[x] != "":
+            Domoticz.Debug("Parameter: '" + x + "':'" + str(Parameters[x]) + "'")
+    Domoticz.Debug("Device count: " + str(len(Devices)))
+    for DeviceName in Devices:
+        Device = Devices[DeviceName]
+        Domoticz.Debug("Device:       '" + str(Device) + "'")
+        for UnitNo in Device.Units:
+            Unit = Device.Units[UnitNo]
+            Domoticz.Debug(" - Unit:       '" + str(Unit) + "'")
     return
